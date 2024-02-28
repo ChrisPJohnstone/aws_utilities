@@ -25,6 +25,6 @@ class RedshiftClient:
         a command that will let you connect via psql
         """
         print(
-            f"export PGPASSWORD={response['DbPassword']} ** "
+            f"export PGPASSWORD={response['DbPassword']} && "
             f"psql -h {host} -p {port} -d {database} -U {response['DbUser']}"
         )
