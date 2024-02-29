@@ -1,4 +1,6 @@
 from argparse import ArgumentParser, Namespace
+from datetime import datetime, timedelta
+from dateutil.relativedelta import relativedelta
 from typing import Any, TypeAlias
 import boto3
 
@@ -8,6 +10,17 @@ Event: TypeAlias = dict[str, str]
 
 
 def handler(event: Event, context: Any) -> None:
+    start_date: datetime = datetime.now()
+    end_date: datetime = start_date - relativedelta(months=2)
+    delete_query: str = (
+        f"DELETE FROM {event['redshift_schema']}.{event['redshift_table']} "
+        f"WHERE "
+        f"        date >= '{end_date.strftime('%Y-%m-%d')}'"
+        f"    AND date < '{start_date.strftime('%Y-%m-%d')}'"
+        f";"
+    )
+    print(delete_query)
+
     redshift_client: RedshiftClient = RedshiftClient(
         host=event["redshift_host"],
         port=event["redshift_port"],
@@ -15,6 +28,7 @@ def handler(event: Event, context: Any) -> None:
         database=event["redshift_database"],
         user=event["redshift_user"],
     )
+    redshift_client.run_query(delete_query)
 
 
 if __name__ == "__main__":
@@ -55,6 +69,18 @@ if __name__ == "__main__":
         required=True,
         help="Redshift user to use for auth",
     )
+    arg_parser.add_argument(
+        "--redshift-schema",
+        dest="redshift_schema",
+        required=True,
+        help="Redshift table to delete data from",
+    )
+    arg_parser.add_argument(
+        "--redshift-table",
+        dest="redshift_table",
+        required=True,
+        help="Redshift table to delete data from",
+    )
     args: Namespace = arg_parser.parse_args()
 
     boto3.setup_default_session(profile_name=args.aws_profile)
@@ -64,5 +90,7 @@ if __name__ == "__main__":
         "redshift_cluster": args.redshift_cluster,
         "redshift_database": args.redshift_database,
         "redshift_user": args.redshift_user,
+        "redshift_schema": args.redshift_schema,
+        "redshift_table": args.redshift_table,
     }
     handler(local_event, None)
