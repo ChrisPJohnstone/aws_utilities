@@ -9,7 +9,7 @@ from redshift_client import RedshiftClient
 Event: TypeAlias = dict[str, str]
 
 
-def handler(event: Event, context: Any) -> None:
+def handler(event: Event, context: Any) -> int:
     start_date: datetime = datetime.now()
     end_date: datetime = start_date - relativedelta(months=2)
     delete_query: str = (
@@ -28,7 +28,8 @@ def handler(event: Event, context: Any) -> None:
         database=event["redshift_database"],
         user=event["redshift_user"],
     )
-    redshift_client.run_query(delete_query)
+    rows_deleted: int = redshift_client.run_query(delete_query)
+    return rows_deleted
 
 
 if __name__ == "__main__":
@@ -93,4 +94,5 @@ if __name__ == "__main__":
         "redshift_schema": args.redshift_schema,
         "redshift_table": args.redshift_table,
     }
-    handler(local_event, None)
+    rows_deleted: int = handler(local_event, None)
+    print(f"{rows_deleted} rows deleted")

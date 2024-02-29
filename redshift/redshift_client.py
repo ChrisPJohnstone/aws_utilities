@@ -20,10 +20,10 @@ class RedshiftClient:
             DbName=database,
             DbUser=user,
         )
-        print(
-            f"export PGPASSWORD={response['DbPassword']} && "
-            f"psql -h {host} -p {port} -d {database} -U {response['DbUser']}"
-        )
+        # print(
+        #     f"export PGPASSWORD={response['DbPassword']} && "
+        #     f"psql -h {host} -p {port} -d {database} -U {response['DbUser']}"
+        # )
         self.connection_kwargs: dict[str, str] = {
             "host": host,
             "port": port,
@@ -32,9 +32,10 @@ class RedshiftClient:
             "password": response["DbPassword"],
         }
     
-    def run_query(self, query: str) -> None:
+    def run_query(self, query: str) -> int:
         connection: extensions.connection = connect(**self.connection_kwargs)
         cursor: extensions.cursor = connection.cursor()
         cursor.execute(query)
         connection.commit()
         connection.close()
+        return cursor.rowcount
