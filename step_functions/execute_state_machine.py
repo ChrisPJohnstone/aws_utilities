@@ -48,9 +48,4 @@ if __name__ == "__main__":
         "state_machine_input": args.state_machine_input,
     }
     result: JsonType = handler(local_event, None)
-
-    if response["status"]:
-        outcome: str = response["status"]
-    else:
-        outcome: str = f"{response['status']}\nresponse['cause']"
-    print(outcome)
+    print(result)
