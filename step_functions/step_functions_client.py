@@ -12,7 +12,7 @@ JsonType: TypeAlias = dict[str, Any]
 class StepFunctionsClient:
     SERVICE_NAME: str = "stepfunctions"
 
-    def __init__(self, aws_profile: str) -> None:
+    def __init__(self, aws_profile: str, **kwargs) -> None:
         self.profile: str = aws_profile
         boto3.setup_default_session(profile_name=self.profile)
         self.client = boto3.client(StepFunctionsClient.SERVICE_NAME)
