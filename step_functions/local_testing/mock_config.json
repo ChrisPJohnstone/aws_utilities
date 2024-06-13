@@ -1,0 +1,23 @@
+{
+  "StateMachines": {
+    "TestStateMachine": {
+      "TestCases": {
+        "POCTest": {
+          "NameOfStateToReplaceResponseFor": "AliasForMockedResponseToState"
+        }
+      }
+    }
+  },
+  "MockedResponses": {
+    "AliasForMockedResponseToState": {
+      "0": {
+        "Return": {
+          "StatusCode": 200,
+          "Payload": {
+            "message": "Hello, World!"
+          }
+        }
+      }
+    }
+  }
+}
